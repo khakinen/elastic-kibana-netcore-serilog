@@ -40,14 +40,13 @@ namespace Elastic.Serilog.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddLogging(loggingBuilder =>
-      	    //     loggingBuilder.AddSerilog(dispose: true));
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddSerilog();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -61,8 +60,6 @@ namespace Elastic.Serilog.Web
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             // app.UseCookiePolicy();
-
-            loggerFactory.AddSerilog();
 
             app.UseMvc(routes =>
             {
