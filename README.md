@@ -1,4 +1,4 @@
-# Logging with ElasticSearch, Kibana, .NET Core 2.1 and Serilog
+# Logging with ElasticSearch 7.2.0, Kibana, .NET Core 2.1 and Serilog
 
 Read the full tutorial here: [https://www.humankode.com/asp-net-core/logging-with-elasticsearch-kibana-asp-net-core-and-docker](https://www.humankode.com/asp-net-core/logging-with-elasticsearch-kibana-asp-net-core-and-docker)
 
