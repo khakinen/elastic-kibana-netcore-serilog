@@ -1,71 +1,48 @@
-﻿using Microsoft.AspNetCore.Builder;
+using System.IO;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Exceptions;
-using Serilog.Sinks.Elasticsearch;
-using System;
+using Microsoft.Extensions.FileProviders;
 
 namespace Elastic.Serilog.Web
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-        
-        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", reloadOnChange: true, optional: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
-
-            var elasticUri = Configuration["ElasticConfiguration:Uri"];
-
-            Log.Logger = new LoggerConfiguration()
-               .Enrich.FromLogContext()
-               .Enrich.WithExceptionDetails()
-               .Enrich.WithMachineName()
-               .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
-               {
-                   AutoRegisterTemplate = true,
-               })
-            .CreateLogger();
+            Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            loggerFactory.AddSerilog();
-            
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
+            app.UseExceptionHandler("/error");
 
-            // app.UseHttpsRedirection();
             app.UseStaticFiles();
-            // app.UseCookiePolicy();
-
-            app.UseMvc(routes =>
+            app.UseStaticFiles(new StaticFileOptions()
             {
-                routes.MapRoute(
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"assets")),
+                RequestPath = new PathString("/assets")
+            });
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -1,0 +1,39 @@
+﻿body, html {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    text-align: center;
+}
+
+
+h1, h1.error {
+    font-weight: bold;
+    font-size: 55px;
+    margin: 100px 0 0 0;
+    color: #1851FC;
+}
+
+h2, h2.error-description {
+    font-weight: 500;
+    font-size: 20px;
+    text-transform: uppercase;
+    color: #C2C0CB;
+    margin-bottom: 25px;
+}
+
+a {
+    color: #0000FF;
+    font-weight: 500;
+}
+
+a:visited {
+    color: #551A8B;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
